@@ -42,18 +42,22 @@ async function displayCategories() {
         categoriesDiv.appendChild(categoryCol);
     });
 }
+
  // generate the meal randomly of given category
  async function displayRandomMeal(category) {
     const randomMealDiv = document.getElementById('random-meal');
     randomMealDiv.innerHTML = '';
 
-    const randomMeal = await fetchData(`https://www.themealdb.com/api/json/v1/1/random.php?c=${category}`);
+    // Fetch random meal
+    const randomMeal = await fetchData(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`);
     if (!randomMeal || !randomMeal.meals || randomMeal.meals.length === 0) {
         randomMealDiv.textContent = 'No meals found for this category.';
         return;
     }
-
-    const meal = randomMeal.meals[0];
+    const mealTMP = randomMeal.meals[0];
+    // To fetch receipe details
+    const mealObj = await fetchData(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealTMP.idMeal}`);
+    const meal = mealObj.meals[0];
     const mealCard = document.createElement('div');
     mealCard.classList.add('card', 'text-center', 'mt-3');
     mealCard.innerHTML = `
@@ -80,6 +84,7 @@ function closeCard() {
 function printCard() {
     window.print();
 }
+
 // wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Basic element setup
